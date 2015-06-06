@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/local/bin/python
 import requests
 import webbrowser
 from twython import Twython
@@ -104,7 +104,7 @@ def authenticate():
    oauth_token = auth['oauth_token']
    oauth_token_secret = auth['oauth_token_secret']
    tauth = Twython(APP_KEY, APP_SECRET, oauth_token, oauth_token_secret)
-   oauth_verifier = raw_input('what\'s the token: ')
+   oauth_verifier = input('what\'s the token: ')
    final_step = tauth.get_authorized_tokens(oauth_verifier)
    OAUTH_TOKEN = final_step['oauth_token']
    OAUTH_TOKEN_SECRET = final_step['oauth_token_secret']
@@ -149,7 +149,6 @@ def main():
          is_open = not is_open
    finally:
       curses.endwin()
-      print LAST_POST_ID
       twitter.destroy_status(id=LAST_POST_ID)
 
 
