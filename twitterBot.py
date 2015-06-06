@@ -1,4 +1,4 @@
-#!/usr/local/bin/python
+#!/usr/bin/python3
 import requests
 import webbrowser
 from twython import Twython
