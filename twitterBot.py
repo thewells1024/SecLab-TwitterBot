@@ -121,6 +121,7 @@ def post_status(twitter, message):
 def main():
    open_message = "SecLab is open :)"
    closed_message = "SecLab is closed :("
+   authenticate()
    try:
       is_open = True
       stdscr = curses.initscr()
