@@ -15,6 +15,7 @@ from sys import argv
 
 APP_KEY = 'wmePBx15xWiHEHyuDAYq1SD5U'
 APP_SECRET = 'DrHR5haUR0UqV5ZPTpKhPHsU3PfVdVvBjl1uXqHbHMtEbNziG3'
+keys = []
 
 #messages
 open_message = None
@@ -98,17 +99,18 @@ please_wait = """
 #    fbconsole.ACCESS_TOKEN = new_access_token
 
 def authenticate():
-   tauth = Twython(APP_KEY, APP_SECRET)
-   auth = tauth.get_authentication_tokens()
-   webbrowser.open_new(auth['auth_url'])
-   oauth_token = auth['oauth_token']
-   oauth_token_secret = auth['oauth_token_secret']
-   tauth = Twython(APP_KEY, APP_SECRET, oauth_token, oauth_token_secret)
-   oauth_verifier = input('what\'s the token: ')
-   final_step = tauth.get_authorized_tokens(oauth_verifier)
-   OAUTH_TOKEN = final_step['oauth_token']
-   OAUTH_TOKEN_SECRET = final_step['oauth_token_secret']
-   return Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
+   if keys == []:
+      tauth = Twython(APP_KEY, APP_SECRET)
+      auth = tauth.get_authentication_tokens()
+      webbrowser.open_new(auth['auth_url'])
+      oauth_token = auth['oauth_token']
+      oauth_token_secret = auth['oauth_token_secret']
+      tauth = Twython(APP_KEY, APP_SECRET, oauth_token, oauth_token_secret)
+      oauth_verifier = input('what\'s the token: ')
+      final_step = tauth.get_authorized_tokens(oauth_verifier)
+      keys.append(final_step['oauth_token'])
+      keys.append(final_step['oauth_token_secret'])
+   return Twython(APP_KEY, APP_SECRET, keys[0], keys[1])
 
 def post_status(twitter, message):
    global LAST_POST_ID
@@ -119,7 +121,6 @@ def post_status(twitter, message):
 def main():
    open_message = "SecLab is open :)"
    closed_message = "SecLab is closed :("
-   twitter = authenticate()
    try:
       is_open = True
       stdscr = curses.initscr()
@@ -131,7 +132,7 @@ def main():
       stdscr.addstr(5,33,please_wait, curses.A_BLINK)
       stdscr.refresh()
       stdscr.addstr(5,33,opened, curses.A_NORMAL)
-      post_status(twitter, open_message)
+      post_status(authenticate(), open_message)
 
       while 1:
          key = stdscr.getch()
@@ -140,12 +141,12 @@ def main():
             stdscr.addstr(5, 33, please_wait, curses.A_BLINK)
             stdscr.refresh()
             stdscr.addstr(5, 33, closed, curses.A_NORMAL)
-            post_status(twitter, closed_message)
+            post_status(authenticate(), closed_message)
          else:
             stdscr.addstr(5,33,please_wait, curses.A_BLINK)
             stdscr.refresh()
             stdscr.addstr(5,33,opened, curses.A_NORMAL)
-            post_status(twitter, open_message)
+            post_status(authenticate(), open_message)
          is_open = not is_open
    finally:
       curses.endwin()
