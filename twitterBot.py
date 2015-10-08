@@ -13,8 +13,8 @@ from sys import argv
 # APP_SECRET = os.environ['FBBOTAPPSECRET']
 # GROUP_ID = os.environ['FBBOTGROUPID']
 
-APP_KEY = 'wmePBx15xWiHEHyuDAYq1SD5U'
-APP_SECRET = 'DrHR5haUR0UqV5ZPTpKhPHsU3PfVdVvBjl1uXqHbHMtEbNziG3'
+APP_KEY = os.eviron['TWAPPID']
+APP_SECRET = os.environ['TWAPPSECRET']
 keys = []
 
 #messages
@@ -99,17 +99,25 @@ please_wait = """
 #    fbconsole.ACCESS_TOKEN = new_access_token
 
 def authenticate():
-   if keys == []:
-      tauth = Twython(APP_KEY, APP_SECRET)
-      auth = tauth.get_authentication_tokens()
-      webbrowser.open_new(auth['auth_url'])
-      oauth_token = auth['oauth_token']
-      oauth_token_secret = auth['oauth_token_secret']
-      tauth = Twython(APP_KEY, APP_SECRET, oauth_token, oauth_token_secret)
-      oauth_verifier = input('what\'s the token: ')
-      final_step = tauth.get_authorized_tokens(oauth_verifier)
-      keys.append(final_step['oauth_token'])
-      keys.append(final_step['oauth_token_secret'])
+   try:
+      key_file = open('keys.txt', 'r')
+      keys.append(key_file.readline()[:-1])
+      keys.append(key_file.readline())
+   except:
+      if keys == []:
+         tauth = Twython(APP_KEY, APP_SECRET)
+         auth = tauth.get_authentication_tokens()
+         webbrowser.open_new(auth['auth_url'])
+         oauth_token = auth['oauth_token']
+         oauth_token_secret = auth['oauth_token_secret']
+         tauth = Twython(APP_KEY, APP_SECRET, oauth_token, oauth_token_secret)
+         oauth_verifier = input('what\'s the token: ')
+         final_step = tauth.get_authorized_tokens(oauth_verifier)
+         keys.append(final_step['oauth_token'])
+         keys.append(final_step['oauth_token_secret'])
+         key_file = open('keys.txt', 'w+')
+         key_file.write('%s\n') % (keys[0])
+         key_file.write('%s') % (keys[1])
    return Twython(APP_KEY, APP_SECRET, keys[0], keys[1])
 
 def post_status(twitter, message):
@@ -119,8 +127,8 @@ def post_status(twitter, message):
    LAST_POST_ID = twitter.update_status(status=message)['id'];
 
 def main():
-   open_message = "SecLab is open :)"
-   closed_message = "SecLab is closed :("
+   open_message = 'SecLab is open :)'
+   closed_message = 'SecLab is closed :('
    authenticate()
    try:
       is_open = True
@@ -154,5 +162,5 @@ def main():
       twitter.destroy_status(id=LAST_POST_ID)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
    main()
