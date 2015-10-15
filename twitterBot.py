@@ -13,7 +13,7 @@ from sys import argv
 # APP_SECRET = os.environ['FBBOTAPPSECRET']
 # GROUP_ID = os.environ['FBBOTGROUPID']
 
-APP_KEY = os.eviron['TWAPPID']
+APP_KEY = os.environ['TWAPPID']
 APP_SECRET = os.environ['TWAPPSECRET']
 keys = []
 
@@ -116,8 +116,8 @@ def authenticate():
          keys.append(final_step['oauth_token'])
          keys.append(final_step['oauth_token_secret'])
          key_file = open('keys.txt', 'w+')
-         key_file.write('%s\n') % (keys[0])
-         key_file.write('%s') % (keys[1])
+         key_file.write('%s\n' % (str(keys[0])))
+         key_file.write('%s' % (str(keys[1])))
    return Twython(APP_KEY, APP_SECRET, keys[0], keys[1])
 
 def post_status(twitter, message):
@@ -159,7 +159,7 @@ def main():
          is_open = not is_open
    finally:
       curses.endwin()
-      twitter.destroy_status(id=LAST_POST_ID)
+      authenticate().destroy_status(id=LAST_POST_ID)
 
 
 if __name__ == '__main__':
